@@ -1,0 +1,19 @@
+{
+  "name": "YOLOsandbox - ${localWorkspaceFolderBasename}",
+  "dockerComposeFile": "../docker/docker-compose.yml",
+  "service": "simple-sandbox",
+  "workspaceFolder": "/workspace",
+  "containerEnv": {
+    "INSTANCE_ID": "${localEnv:VSCODE_PID:-${localEnv:RANDOM}}"
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
+  "remoteUser": "developer",
+  "updateRemoteUserUID": true,
+  "shutdownAction": "none"
+}

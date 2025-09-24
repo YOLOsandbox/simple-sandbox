@@ -1,0 +1,92 @@
+services:
+  simple-sandbox:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    #container_name: simple-sandbox-container  # Removing this to allow for multiple containers
+    
+    # Security configurations
+    # Drop all capabilities first, then add back only what's essential
+    cap_drop:
+      - ALL
+    
+    # Add only minimal capabilities needed for development
+    cap_add:
+      - CHOWN         # Change file ownership
+      - SETGID        # Required for sudo to work properly
+      - SETUID        # Required for sudo to work properly
+    
+    # Security options
+    # Note: no-new-privileges breaks sudo functionality
+    # security_opt:
+    #   - no-new-privileges:true
+    
+    # Volumes - mount project root (1 level up from docker/)
+    volumes:
+      # 1. The main read-write mount for the whole project
+      - ..:/workspace
+
+      # 2. Read-only "shields" placed on top of the sensitive subdirectories
+      - type: bind
+        source: ../docker
+        target: /workspace/docker
+        read_only: true
+      - type: bind
+        source: ../.devcontainer
+        target: /workspace/.devcontainer
+        read_only: true
+
+      # 3. The claude-data mount for session persistence
+      - ../claude-data:/home/developer/.claude
+
+    # tmpfs mounts for apt cache and lib (required for apt to work without DAC_OVERRIDE)
+    tmpfs:
+      - /var/cache/apt
+      - /var/lib/apt
+
+    # Network mode
+    network_mode: bridge
+
+    # Set hostname for the container
+    hostname: yolosandbox
+    
+    # Environment variables
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TERM=xterm-256color
+      - TZ=${TZ:-UTC}
+    
+    # Keep container running
+    stdin_open: true
+    tty: true
+    
+    # Basic network configuration
+    sysctls:
+      - net.ipv4.ip_forward=1
+    
+    # Working directory
+    working_dir: /workspace
+    
+    # Resource limits to prevent host exhaustion
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+        reservations:
+          memory: 2G
+    
+    # Process and file limits
+    ulimits:
+      nproc: 1000      # Max number of processes
+      nofile:
+        soft: 4096     # Soft limit for open files
+        hard: 8192     # Hard limit for open files
+      memlock:
+        soft: -1       # Unlimited locked memory (soft)
+        hard: -1       # Unlimited locked memory (hard)
