@@ -16,6 +16,9 @@ If this is a project directory, best practice dictates that you have it under ve
 curl -sSL https://raw.githubusercontent.com/YOLOsandbox/simple-sandbox/main/init.sh | bash
 ```
 
+Then, simply start your favorite IDE (VSCode-derived, surely! 😜) from that same directory and reopen it in the resulting DevContainer! 🤘🚀
+
+
 ## 🎯 What Problems Does This Solve?
 
 - **"I'm scared AI will break something"** → AI can only work in the sandbox
