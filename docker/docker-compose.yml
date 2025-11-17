@@ -83,7 +83,7 @@ services:
     
     # Process and file limits
     ulimits:
-      nproc: 1000      # Max number of processes
+      nproc: 4096      # Max number of processes
       nofile:
         soft: 4096     # Soft limit for open files
         hard: 8192     # Hard limit for open files
